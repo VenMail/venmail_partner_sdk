@@ -44,7 +44,7 @@ jobs:
 
           cp -r cpanel/hooks build/cpanel/venmail/
           cp -r cpanel/user build/cpanel/venmail/
-          cp -r cpanel/admin build/cpanel/venmail/
+          [ -d cpanel/admin ] && cp -r cpanel/admin build/cpanel/venmail/ || true
           cp cpanel/install.sh build/cpanel/venmail/
           cp cpanel/uninstall.sh build/cpanel/venmail/
 
