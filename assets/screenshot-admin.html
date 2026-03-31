@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 892px; height: 502px; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; }
+  .frame { width: 892px; height: 502px; display: flex; flex-direction: column; }
+  .topbar { background: #1a1f36; color: #fff; padding: 10px 20px; font-size: 13px; display: flex; align-items: center; gap: 12px; }
+  .topbar .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: #fc5753; } .dot.y { background: #fdbc40; } .dot.g { background: #33c748; }
+  .topbar .url { background: rgba(255,255,255,0.1); border-radius: 4px; padding: 4px 14px; font-size: 12px; color: rgba(255,255,255,0.6); margin-left: 12px; flex: 1; }
+  .whmcs-bar { background: #353c53; color: #a0aec0; padding: 8px 20px; font-size: 12px; display: flex; gap: 20px; }
+  .whmcs-bar span { cursor: pointer; } .whmcs-bar .active { color: #fff; border-bottom: 2px solid #e95443; padding-bottom: 4px; }
+  .main { display: flex; flex: 1; }
+  .sidebar { width: 200px; background: #fff; border-right: 1px solid #e2e8f0; padding: 16px 0; }
+  .sidebar .item { padding: 8px 20px; font-size: 12.5px; color: #718096; cursor: pointer; }
+  .sidebar .item.active { color: #e95443; font-weight: 600; background: #fff5f5; border-right: 3px solid #e95443; }
+  .sidebar .section { padding: 4px 20px; font-size: 10px; font-weight: 700; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.8px; margin-top: 12px; margin-bottom: 4px; }
+  .content { flex: 1; padding: 20px; overflow: hidden; }
+  .page-title { font-size: 18px; font-weight: 700; color: #1a202c; margin-bottom: 4px; }
+  .page-sub { font-size: 12px; color: #a0aec0; margin-bottom: 16px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .card { background: #fff; border-radius: 8px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .card-label { font-size: 11px; color: #a0aec0; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .card-value { font-size: 20px; font-weight: 700; color: #1a202c; }
+  .card-value.green { color: #38a169; }
+  .card-value.red { color: #e53e3e; }
+  .card-value.blue { color: #3182ce; }
+  .card-sm { font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  th { background: #f7fafc; font-size: 10px; font-weight: 700; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; text-align: left; }
+  td { padding: 8px 12px; font-size: 12px; color: #4a5568; border-top: 1px solid #f0f0f0; }
+  .badge-ok { background: #c6f6d5; color: #276749; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 8px; }
+  .badge-warn { background: #fefcbf; color: #975a16; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 8px; }
+  .btn { display: inline-block; background: #e95443; color: #fff; font-size: 11px; font-weight: 600; padding: 6px 14px; border-radius: 5px; margin-right: 6px; border: none; }
+  .btn-outline { background: transparent; border: 1px solid #e2e8f0; color: #4a5568; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="topbar">
+    <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+    <div class="url">admin.yourcompany.com/configproducts.php — WHMCS Admin</div>
+  </div>
+  <div class="whmcs-bar">
+    <span>Dashboard</span> <span>Orders</span> <span>Clients</span> <span class="active">Products</span> <span>Support</span> <span>Utilities</span>
+  </div>
+  <div class="main">
+    <div class="sidebar">
+      <div class="section">Service Details</div>
+      <div class="item">Overview</div>
+      <div class="item active">Venmail Module</div>
+      <div class="item">DNS Records</div>
+      <div class="item">Billing</div>
+      <div class="section">Actions</div>
+      <div class="item">Check Verification</div>
+      <div class="item">Change Plan</div>
+      <div class="item">SSO Login</div>
+    </div>
+    <div class="content">
+      <div class="page-title">Venmail Account: acmecorp.com</div>
+      <div class="page-sub">Managed by Venmail provisioning module</div>
+      <div class="grid">
+        <div class="card"><div class="card-label">Status</div><div class="card-value green card-sm">Active</div></div>
+        <div class="card"><div class="card-label">Plan</div><div class="card-value blue card-sm">Business</div></div>
+        <div class="card"><div class="card-label">Emails Sent (Mar)</div><div class="card-value">2,847</div></div>
+        <div class="card"><div class="card-label">Emails Received (Mar)</div><div class="card-value">14,392</div></div>
+      </div>
+      <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        <span style="font-size:13px;font-weight:600;color:#2d3748">Verification</span>
+        <button class="btn">Check DNS Verification</button>
+        <button class="btn btn-outline">View DNS Records</button>
+      </div>
+      <table>
+        <thead><tr><th>Check</th><th>Status</th><th>Backend</th><th>Subscription</th><th>Ends At</th></tr></thead>
+        <tbody>
+          <tr><td>CNAME Verified</td><td><span class="badge-ok">Verified</span></td><td>Venmail</td><td>Monthly</td><td>2026-04-30</td></tr>
+          <tr><td>DKIM Verified</td><td><span class="badge-ok">Verified</span></td><td>Venmail</td><td>Monthly</td><td>2026-04-30</td></tr>
+          <tr><td>SPF Record</td><td><span class="badge-ok">Detected</span></td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>MX Record</td><td><span class="badge-ok">Detected</span></td><td>—</td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>
