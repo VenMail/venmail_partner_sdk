@@ -46,8 +46,10 @@ add_hook('DailyCronJob', 1, function () {
     try {
         $services = Capsule::table('tblhosting')
             ->join('tblservers', 'tblhosting.server', '=', 'tblservers.id')
+            ->join('tblproducts', 'tblhosting.packageid', '=', 'tblproducts.id')
             ->where('tblservers.type', 'venmail')
             ->where('tblhosting.domainstatus', 'Active')
+            ->where('tblproducts.configoption3', 'on')
             ->select([
                 'tblhosting.domain',
                 'tblservers.hostname',

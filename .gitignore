@@ -1,0 +1,20 @@
+# Build artifacts
+/dist/
+/build/
+*.zip
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Composer
+/vendor/
+
+# Local config overrides
+.claude/

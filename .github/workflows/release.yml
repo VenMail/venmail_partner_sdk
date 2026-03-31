@@ -1,0 +1,100 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build WHMCS module ZIP
+        run: |
+          mkdir -p build/whmcs/modules/servers/venmail/lib
+          mkdir -p build/whmcs/modules/servers/venmail/templates
+          mkdir -p build/whmcs/modules/servers/venmail/lang
+
+          cp whmcs/modules/servers/venmail/venmail.php build/whmcs/modules/servers/venmail/
+          cp whmcs/modules/servers/venmail/hooks.php build/whmcs/modules/servers/venmail/
+          cp whmcs/modules/servers/venmail/templates/clientarea.tpl build/whmcs/modules/servers/venmail/templates/
+          cp whmcs/modules/servers/venmail/lang/english.php build/whmcs/modules/servers/venmail/lang/
+
+          # Bundle the full shared API client (not the bridge)
+          cp lib/VenmailApi.php build/whmcs/modules/servers/venmail/lib/
+
+          # Copy logo if present
+          [ -f whmcs/modules/servers/venmail/logo.png ] && cp whmcs/modules/servers/venmail/logo.png build/whmcs/modules/servers/venmail/ || true
+
+          cd build/whmcs
+          zip -r ../../venmail-whmcs-${{ steps.version.outputs.VERSION }}.zip modules/
+
+      - name: Build cPanel plugin ZIP
+        run: |
+          mkdir -p build/cpanel/venmail
+
+          cp -r cpanel/hooks build/cpanel/venmail/
+          cp -r cpanel/user build/cpanel/venmail/
+          cp -r cpanel/admin build/cpanel/venmail/
+          cp cpanel/install.sh build/cpanel/venmail/
+          cp cpanel/uninstall.sh build/cpanel/venmail/
+
+          # Bundle the shared API client
+          mkdir -p build/cpanel/venmail/lib
+          cp lib/VenmailApi.php build/cpanel/venmail/lib/
+
+          cd build/cpanel
+          zip -r ../../venmail-cpanel-${{ steps.version.outputs.VERSION }}.zip venmail/
+
+      - name: Build Plesk extension ZIP
+        run: |
+          mkdir -p build/plesk/venmail
+
+          cp plesk/meta.xml build/plesk/venmail/
+          cp -r plesk/plib build/plesk/venmail/
+          cp -r plesk/htdocs build/plesk/venmail/ 2>/dev/null || true
+
+          # Bundle the shared API client
+          mkdir -p build/plesk/venmail/lib
+          cp lib/VenmailApi.php build/plesk/venmail/lib/
+
+          cd build/plesk
+          zip -r ../../venmail-plesk-${{ steps.version.outputs.VERSION }}.zip venmail/
+
+      - name: Build DirectAdmin plugin ZIP
+        run: |
+          mkdir -p build/directadmin/venmail
+
+          cp -r directadmin/exec build/directadmin/venmail/
+          cp -r directadmin/hooks build/directadmin/venmail/
+          cp -r directadmin/admin build/directadmin/venmail/
+          cp -r directadmin/user build/directadmin/venmail/
+          cp directadmin/plugin.conf build/directadmin/venmail/
+          cp directadmin/venmail.conf build/directadmin/venmail/
+
+          # Bundle the shared API client
+          mkdir -p build/directadmin/venmail/lib
+          cp lib/VenmailApi.php build/directadmin/venmail/lib/
+
+          cd build/directadmin
+          zip -r ../../venmail-directadmin-${{ steps.version.outputs.VERSION }}.zip venmail/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Venmail Partner SDK v${{ steps.version.outputs.VERSION }}
+          generate_release_notes: true
+          files: |
+            venmail-whmcs-${{ steps.version.outputs.VERSION }}.zip
+            venmail-cpanel-${{ steps.version.outputs.VERSION }}.zip
+            venmail-plesk-${{ steps.version.outputs.VERSION }}.zip
+            venmail-directadmin-${{ steps.version.outputs.VERSION }}.zip

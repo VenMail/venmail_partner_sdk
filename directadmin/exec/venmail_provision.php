@@ -9,7 +9,17 @@
  * Usage: php venmail_provision.php <action> <domain> [username] [email]
  */
 
-require_once dirname(__DIR__, 2) . '/lib/VenmailApi.php';
+// Resolve API client: installed path (plugin/lib/) or SDK path (repo root/lib/)
+$installedPath = dirname(__DIR__) . '/lib/VenmailApi.php';
+$sdkPath = dirname(__DIR__, 2) . '/lib/VenmailApi.php';
+if (file_exists($installedPath)) {
+    require_once $installedPath;
+} elseif (file_exists($sdkPath)) {
+    require_once $sdkPath;
+} else {
+    fwrite(STDERR, "Venmail: VenmailApi.php not found\n");
+    exit(1);
+}
 
 use Venmail\PartnerSDK\VenmailApi;
 

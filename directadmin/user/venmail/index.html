@@ -26,6 +26,12 @@
         const urlParams = new URLSearchParams(window.location.search);
         const domain = urlParams.get('domain') || window.location.hostname;
 
+        function esc(str) {
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
+        }
+
         fetch('/CMD_PLUGINS/venmail/dns.php?domain=' + encodeURIComponent(domain))
             .then(r => r.json())
             .then(data => {
@@ -34,17 +40,17 @@
                     app.innerHTML = '<div class="alert-warn">Could not load DNS records. Make sure Venmail plugin is configured.</div>';
                     return;
                 }
-                let html = '<div class="card"><h3>DNS Records for ' + domain + '</h3>';
+                let html = '<div class="card"><h3>DNS Records for ' + esc(domain) + '</h3>';
                 html += '<table><thead><tr><th>Type</th><th>Name</th><th>Value</th><th>Purpose</th></tr></thead><tbody>';
                 (data.data.records || []).forEach(r => {
-                    html += '<tr><td><strong>' + r.type + '</strong></td><td><code>' + r.name + '</code></td><td><code>' + r.value + '</code></td><td>' + r.purpose + '</td></tr>';
+                    html += '<tr><td><strong>' + esc(r.type) + '</strong></td><td><code>' + esc(r.name) + '</code></td><td><code>' + esc(r.value) + '</code></td><td>' + esc(r.purpose) + '</td></tr>';
                 });
                 html += '</tbody></table></div>';
                 html += '<div style="display:flex;gap:10px"><button class="btn" onclick="sso()">Open Venmail Dashboard</button></div>';
                 app.innerHTML = html;
             })
             .catch(e => {
-                document.getElementById('app').innerHTML = '<div class="alert-warn">Error: ' + e.message + '</div>';
+                document.getElementById('app').innerHTML = '<div class="alert-warn">Error: ' + esc(e.message) + '</div>';
             });
 
         function sso() {

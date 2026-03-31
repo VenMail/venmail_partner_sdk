@@ -16,7 +16,18 @@
  *   Accounts::Remove::post   → venmail_account_remove
  */
 
-require_once dirname(__DIR__, 2) . '/lib/VenmailApi.php';
+// When installed: both files live in /usr/local/venmail/
+// When developing from the SDK: resolve relative to repo root
+$installedPath = dirname(__FILE__) . '/VenmailApi.php';
+$sdkPath = dirname(__DIR__, 2) . '/lib/VenmailApi.php';
+if (file_exists($installedPath)) {
+    require_once $installedPath;
+} elseif (file_exists($sdkPath)) {
+    require_once $sdkPath;
+} else {
+    error_log('Venmail cPanel: VenmailApi.php not found');
+    return;
+}
 
 use Venmail\PartnerSDK\VenmailApi;
 

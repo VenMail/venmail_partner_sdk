@@ -62,6 +62,12 @@
             alert('Save the API URL and Key to venmail.conf on the server.\nAPI URL: ' + document.getElementById('api_url').value + '\nAPI Key: ' + document.getElementById('api_key').value);
         }
 
+        function esc(str) {
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
+        }
+
         async function testConnection() {
             const url = document.getElementById('api_url').value;
             const key = document.getElementById('api_key').value;
@@ -74,9 +80,9 @@
                 const data = await resp.json();
                 el.innerHTML = data.success
                     ? '<span style="color:green">Connected successfully!</span>'
-                    : '<span style="color:red">Failed: ' + (data.message || 'Unknown') + '</span>';
+                    : '<span style="color:red">Failed: ' + esc(data.message || 'Unknown') + '</span>';
             } catch(e) {
-                el.innerHTML = '<span style="color:red">Connection error: ' + e.message + '</span>';
+                el.innerHTML = '<span style="color:red">Connection error: ' + esc(e.message) + '</span>';
             }
         }
 
@@ -96,10 +102,10 @@
                     document.getElementById('api_key').value = data.data.api_key;
                     el.innerHTML = '<span style="color:green">Logged in! API key populated above. Click Save.</span>';
                 } else {
-                    el.innerHTML = '<span style="color:red">' + (data.message || 'Login failed') + '</span>';
+                    el.innerHTML = '<span style="color:red">' + esc(data.message || 'Login failed') + '</span>';
                 }
             } catch(e) {
-                el.innerHTML = '<span style="color:red">Error: ' + e.message + '</span>';
+                el.innerHTML = '<span style="color:red">Error: ' + esc(e.message) + '</span>';
             }
         }
 
@@ -122,10 +128,10 @@
                     document.getElementById('api_key').value = data.data.api_key;
                     el.innerHTML = '<span style="color:green">Account created! API key populated above. Click Save.</span>';
                 } else {
-                    el.innerHTML = '<span style="color:red">' + (data.message || 'Signup failed') + '</span>';
+                    el.innerHTML = '<span style="color:red">' + esc(data.message || 'Signup failed') + '</span>';
                 }
             } catch(e) {
-                el.innerHTML = '<span style="color:red">Error: ' + e.message + '</span>';
+                el.innerHTML = '<span style="color:red">Error: ' + esc(e.message) + '</span>';
             }
         }
     </script>

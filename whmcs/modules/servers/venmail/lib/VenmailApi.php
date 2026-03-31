@@ -10,7 +10,8 @@
  */
 
 // When used as part of the full SDK (development)
-$sdkPath = dirname(__DIR__, 4) . '/lib/VenmailApi.php';
+// Path: whmcs/modules/servers/venmail/lib/ → up 5 levels → repo root
+$sdkPath = dirname(__DIR__, 5) . '/lib/VenmailApi.php';
 if (file_exists($sdkPath)) {
     require_once $sdkPath;
     return;

@@ -13,12 +13,9 @@ SDK_DIR="$(dirname "$SCRIPT_DIR")"
 
 echo "Installing Venmail cPanel Plugin..."
 
-# Copy shared API client
+# Copy shared API client and hooks to /usr/local/venmail/
 mkdir -p /usr/local/venmail
 cp "$SDK_DIR/lib/VenmailApi.php" /usr/local/venmail/
-
-# Install hooks
-mkdir -p "$(dirname "$HOOKS_DIR")"
 cp "$SCRIPT_DIR/hooks/venmail_hooks.php" /usr/local/venmail/
 
 # Install cPanel user interface

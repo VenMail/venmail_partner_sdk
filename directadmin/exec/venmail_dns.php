@@ -8,7 +8,16 @@
  * Compatible with PHP 7.4+.
  */
 
-require_once dirname(__DIR__, 2) . '/lib/VenmailApi.php';
+$installedPath = dirname(__DIR__) . '/lib/VenmailApi.php';
+$sdkPath = dirname(__DIR__, 2) . '/lib/VenmailApi.php';
+if (file_exists($installedPath)) {
+    require_once $installedPath;
+} elseif (file_exists($sdkPath)) {
+    require_once $sdkPath;
+} else {
+    echo json_encode(['success' => false, 'message' => 'VenmailApi.php not found']);
+    exit(1);
+}
 
 use Venmail\PartnerSDK\VenmailApi;
 

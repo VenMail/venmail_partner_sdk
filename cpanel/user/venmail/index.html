@@ -46,6 +46,12 @@
         // cPanel provides the domain via CPANEL.PAGE.domain or we can read it from the URL
         const domain = (typeof CPANEL !== 'undefined' && CPANEL.PAGE) ? CPANEL.PAGE.domain : window.location.hostname;
 
+        function esc(str) {
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
+        }
+
         async function loadData() {
             try {
                 const resp = await fetch('/cgi-bin/venmail/api.cgi?action=dns&domain=' + encodeURIComponent(domain));
@@ -54,7 +60,7 @@
                 if (data.success && data.data && data.data.records) {
                     const tbody = document.getElementById('dns-records');
                     data.data.records.forEach(r => {
-                        tbody.innerHTML += `<tr><td><strong>${r.type}</strong></td><td><code>${r.name}</code></td><td><code>${r.value}</code></td><td>${r.purpose}</td></tr>`;
+                        tbody.innerHTML += '<tr><td><strong>' + esc(r.type) + '</strong></td><td><code>' + esc(r.name) + '</code></td><td><code>' + esc(r.value) + '</code></td><td>' + esc(r.purpose) + '</td></tr>';
                     });
                 }
 
