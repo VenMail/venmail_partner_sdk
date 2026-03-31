@@ -1,0 +1,25 @@
+{
+    "name": "venmail/partner-sdk",
+    "description": "Venmail Partner SDK — Free hosting platform integrations for WHMCS, cPanel, Plesk, and DirectAdmin",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://venmail.io",
+    "keywords": ["venmail", "email", "hosting", "whmcs", "cpanel", "plesk", "directadmin", "provisioning"],
+    "authors": [
+        {
+            "name": "Venmail",
+            "homepage": "https://venmail.io"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Venmail\\PartnerSDK\\": "lib/"
+        }
+    },
+    "minimum-stability": "stable"
+}

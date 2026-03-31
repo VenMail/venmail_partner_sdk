@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Venmail Email Setup</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 20px; }
+        .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .status-ok { color: #28a745; } .status-pending { color: #ffc107; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #dee2e6; text-align: left; }
+        th { background: #f8f9fa; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-size: 13px; word-break: break-all; }
+        .btn { display: inline-block; padding: 10px 20px; background: #007bff; color: #fff; text-decoration: none; border-radius: 4px; border: none; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .btn-success { background: #28a745; } .btn-success:hover { background: #218838; }
+        #loading { text-align: center; padding: 40px; }
+        .alert { padding: 12px 16px; border-radius: 4px; margin-bottom: 15px; }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-warning { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <h2>Venmail Email Setup</h2>
+
+    <div id="loading">Loading...</div>
+    <div id="content" style="display:none">
+        <div id="status-banner"></div>
+
+        <div class="card">
+            <h3>DNS Records</h3>
+            <p>Configure these records at your domain registrar:</p>
+            <table>
+                <thead><tr><th>Type</th><th>Name</th><th>Value</th><th>Purpose</th></tr></thead>
+                <tbody id="dns-records"></tbody>
+            </table>
+        </div>
+
+        <div class="card" style="display:flex;gap:10px">
+            <button class="btn" onclick="checkVerification()">Check Verification</button>
+            <button class="btn btn-success" onclick="openDashboard()">Open Venmail Dashboard</button>
+        </div>
+    </div>
+
+    <script>
+        // cPanel provides the domain via CPANEL.PAGE.domain or we can read it from the URL
+        const domain = (typeof CPANEL !== 'undefined' && CPANEL.PAGE) ? CPANEL.PAGE.domain : window.location.hostname;
+
+        async function loadData() {
+            try {
+                const resp = await fetch('/cgi-bin/venmail/api.cgi?action=dns&domain=' + encodeURIComponent(domain));
+                const data = await resp.json();
+
+                if (data.success && data.data && data.data.records) {
+                    const tbody = document.getElementById('dns-records');
+                    data.data.records.forEach(r => {
+                        tbody.innerHTML += `<tr><td><strong>${r.type}</strong></td><td><code>${r.name}</code></td><td><code>${r.value}</code></td><td>${r.purpose}</td></tr>`;
+                    });
+                }
+
+                const acctResp = await fetch('/cgi-bin/venmail/api.cgi?action=account&domain=' + encodeURIComponent(domain));
+                const acct = await acctResp.json();
+
+                if (acct.success && acct.data) {
+                    const banner = document.getElementById('status-banner');
+                    if (acct.data.verification && acct.data.verification.fully_verified) {
+                        banner.innerHTML = '<div class="alert alert-success">Your domain is fully verified and active!</div>';
+                    } else {
+                        banner.innerHTML = '<div class="alert alert-warning">Please configure the DNS records below to activate email.</div>';
+                    }
+                }
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } catch (e) {
+                document.getElementById('loading').textContent = 'Error loading data: ' + e.message;
+            }
+        }
+
+        async function checkVerification() {
+            const resp = await fetch('/cgi-bin/venmail/api.cgi?action=verify&domain=' + encodeURIComponent(domain));
+            const data = await resp.json();
+            if (data.success) {
+                alert('Verification check complete. Refresh the page to see updated status.');
+                location.reload();
+            } else {
+                alert('Verification failed: ' + (data.message || 'Unknown error'));
+            }
+        }
+
+        async function openDashboard() {
+            const resp = await fetch('/cgi-bin/venmail/api.cgi?action=sso&domain=' + encodeURIComponent(domain));
+            const data = await resp.json();
+            if (data.success && data.data && data.data.sso_url) {
+                window.open(data.data.sso_url, '_blank');
+            } else {
+                alert('SSO failed: ' + (data.message || 'Unknown error'));
+            }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

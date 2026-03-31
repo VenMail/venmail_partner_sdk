@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Venmail Admin Settings</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 20px; }
+        .card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 20px; max-width: 600px; }
+        label { display: block; margin-top: 12px; font-weight: 600; }
+        input[type="text"], input[type="password"], input[type="email"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 4px; font-size: 14px; }
+        .btn { display: inline-block; padding: 10px 20px; background: #2563eb; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-top: 16px; }
+        .btn:hover { background: #1d4ed8; }
+        .section { margin-top: 24px; padding-top: 16px; border-top: 1px solid #eee; }
+        h3 { margin-top: 0; }
+        .help { color: #666; font-size: 13px; margin-top: 4px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Venmail Configuration</h2>
+
+        <div>
+            <h3>API Settings</h3>
+            <p class="help">Enter your Venmail partner API key. Edit <code>/usr/local/directadmin/plugins/venmail/venmail.conf</code> directly or use the form below.</p>
+
+            <label>API URL</label>
+            <input type="text" id="api_url" value="https://m.venmail.io" />
+
+            <label>API Key</label>
+            <input type="text" id="api_key" placeholder="Your 64-character partner API key" />
+
+            <button class="btn" onclick="saveConfig()">Save Configuration</button>
+            <button class="btn" style="background:#16a34a" onclick="testConnection()">Test Connection</button>
+            <div id="test-result" style="margin-top:10px"></div>
+        </div>
+
+        <div class="section">
+            <h3>Don't have a partner account?</h3>
+            <p class="help">Sign up or log in to get your API key automatically.</p>
+
+            <label>Email</label>
+            <input type="email" id="auth_email" placeholder="you@example.com" />
+
+            <label>Password</label>
+            <input type="password" id="auth_password" placeholder="Password" />
+
+            <label>Company Name (for signup only)</label>
+            <input type="text" id="auth_company" placeholder="Your Company" />
+
+            <div style="display:flex;gap:10px;margin-top:16px">
+                <button class="btn" onclick="partnerLogin()">Login</button>
+                <button class="btn" style="background:#7c3aed" onclick="partnerSignup()">Sign Up</button>
+            </div>
+            <div id="auth-result" style="margin-top:10px"></div>
+        </div>
+    </div>
+
+    <script>
+        function saveConfig() {
+            // In a real DirectAdmin plugin, this would call a CGI script
+            // that writes to venmail.conf
+            alert('Save the API URL and Key to venmail.conf on the server.\nAPI URL: ' + document.getElementById('api_url').value + '\nAPI Key: ' + document.getElementById('api_key').value);
+        }
+
+        async function testConnection() {
+            const url = document.getElementById('api_url').value;
+            const key = document.getElementById('api_key').value;
+            const el = document.getElementById('test-result');
+
+            try {
+                const resp = await fetch(url + '/api/v1/provisioning/health', {
+                    headers: { 'Authorization': 'Bearer ' + key }
+                });
+                const data = await resp.json();
+                el.innerHTML = data.success
+                    ? '<span style="color:green">Connected successfully!</span>'
+                    : '<span style="color:red">Failed: ' + (data.message || 'Unknown') + '</span>';
+            } catch(e) {
+                el.innerHTML = '<span style="color:red">Connection error: ' + e.message + '</span>';
+            }
+        }
+
+        async function partnerLogin() {
+            const el = document.getElementById('auth-result');
+            try {
+                const resp = await fetch('https://m.venmail.io/api/v1/provisioning/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('auth_email').value,
+                        password: document.getElementById('auth_password').value
+                    })
+                });
+                const data = await resp.json();
+                if (data.success && data.data && data.data.api_key) {
+                    document.getElementById('api_key').value = data.data.api_key;
+                    el.innerHTML = '<span style="color:green">Logged in! API key populated above. Click Save.</span>';
+                } else {
+                    el.innerHTML = '<span style="color:red">' + (data.message || 'Login failed') + '</span>';
+                }
+            } catch(e) {
+                el.innerHTML = '<span style="color:red">Error: ' + e.message + '</span>';
+            }
+        }
+
+        async function partnerSignup() {
+            const el = document.getElementById('auth-result');
+            try {
+                const resp = await fetch('https://m.venmail.io/api/v1/provisioning/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('auth_email').value,
+                        password: document.getElementById('auth_password').value,
+                        name: document.getElementById('auth_email').value.split('@')[0],
+                        company: document.getElementById('auth_company').value || 'My Company',
+                        platform_type: 'directadmin'
+                    })
+                });
+                const data = await resp.json();
+                if (data.success && data.data && data.data.api_key) {
+                    document.getElementById('api_key').value = data.data.api_key;
+                    el.innerHTML = '<span style="color:green">Account created! API key populated above. Click Save.</span>';
+                } else {
+                    el.innerHTML = '<span style="color:red">' + (data.message || 'Signup failed') + '</span>';
+                }
+            } catch(e) {
+                el.innerHTML = '<span style="color:red">Error: ' + e.message + '</span>';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <id>venmail</id>
+    <name>Venmail Email Hosting</name>
+    <description>Provision and manage Venmail email accounts for your hosting customers.</description>
+    <version>1.0.0</version>
+    <release>1</release>
+    <vendor>Venmail</vendor>
+    <url>https://venmail.io</url>
+    <php_min>7.4</php_min>
+    <plesk_min>18.0</plesk_min>
+</module>
